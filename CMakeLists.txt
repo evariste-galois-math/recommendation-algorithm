@@ -23,8 +23,10 @@ FetchContent_MakeAvailable(httplib)
 
 find_package(CURL REQUIRED)
 
-set(SQLite3_INCLUDE_DIR /opt/homebrew/opt/sqlite/include)
-set(SQLite3_LIBRARY /opt/homebrew/opt/sqlite/lib/libsqlite3.dylib)
+if(APPLE)
+    set(SQLite3_INCLUDE_DIR /opt/homebrew/opt/sqlite/include)
+    set(SQLite3_LIBRARY /opt/homebrew/opt/sqlite/lib/libsqlite3.dylib)
+endif()
 find_package(SQLite3 REQUIRED)
 
 find_package(Threads REQUIRED)

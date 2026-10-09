@@ -1,7 +1,13 @@
 cmake-build-debug/
 cmake-build-release/
+build/
 .idea/
 *.o
 archive-2/
 *.csv
 *.db
+!data/animes.csv
+!data/similarity.db
+node_modules/
+dist/
+.env
