@@ -8,6 +8,9 @@
 #include <mutex>
 #include <iostream>
 
+static constexpr int kMinCoRaters = 50;
+static constexpr int kFullWeightCoRaters = 100;
+
 double SimilarityMatrix::cosineSimilarity(int watchedAnimeId, int candidateAnimeId) const {
     auto itA = itemUserRatings_.find(watchedAnimeId);
     auto itB = itemUserRatings_.find(candidateAnimeId);
@@ -34,6 +37,7 @@ double SimilarityMatrix::cosineSimilarity(int watchedAnimeId, int candidateAnime
     double dotProduct = 0.0;
     double normA = 0.0;
     double normB = 0.0;
+    int coRaters = 0;
 
     for (const auto& [userId, rating] : *smaller) {
         auto match = larger->find(userId);
@@ -45,14 +49,22 @@ double SimilarityMatrix::cosineSimilarity(int watchedAnimeId, int candidateAnime
             dotProduct += rA * rB;
             normA += rA * rA;
             normB += rB * rB;
+            coRaters++;
         }
+    }
+
+    if (coRaters < kMinCoRaters) {
+        return 0.0;
     }
 
     if (normA == 0.0 || normB == 0.0) {
         return 0.0;
     }
 
-    return dotProduct / (std::sqrt(normA) * std::sqrt(normB));
+    double similarity = dotProduct / (std::sqrt(normA) * std::sqrt(normB));
+    double weight = static_cast<double>(std::min(coRaters, kFullWeightCoRaters)) / kFullWeightCoRaters;
+
+    return similarity * weight;
 }
 
 void SimilarityMatrix::build(const std::vector<DatasetRating>& ratings) {
@@ -126,7 +138,10 @@ void SimilarityMatrix::precomputeAll() {
 
                 std::vector<std::pair<int, double>> scored;
                 for (int animeB : candidates) {
-                    scored.push_back({animeB, cosineSimilarity(animeA, animeB)});
+                    double sim = cosineSimilarity(animeA, animeB);
+                    if (sim > 0.0) {
+                    scored.push_back({animeB, sim});
+                    }
                 }
 
                 size_t k = std::min(scored.size(), static_cast<size_t>(kMaxNeighbors));
