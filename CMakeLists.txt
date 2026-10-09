@@ -12,6 +12,15 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(json)
 
+set(HTTPLIB_USE_OPENSSL_IF_AVAILABLE OFF)
+set(HTTPLIB_USE_ZLIB_IF_AVAILABLE OFF)
+set(HTTPLIB_USE_BROTLI_IF_AVAILABLE OFF)
+FetchContent_Declare(
+        httplib
+        URL https://github.com/yhirose/cpp-httplib/archive/refs/tags/v0.53.1.tar.gz
+)
+FetchContent_MakeAvailable(httplib)
+
 find_package(CURL REQUIRED)
 
 set(SQLite3_INCLUDE_DIR /opt/homebrew/opt/sqlite/include)
@@ -20,20 +29,24 @@ find_package(SQLite3 REQUIRED)
 
 find_package(Threads REQUIRED)
 
-add_executable(RecommendationAlgorithm
-        main.cpp
+add_library(RecommendationCore STATIC
         MalClient.cpp
         Dataset.cpp
-        Dataset.h
         SimilarityMatrix.cpp
-        SimilarityMatrix.h
         RecommendationEngine.cpp
-        RecommendationEngine.h
 )
 
-target_link_libraries(RecommendationAlgorithm PRIVATE
+target_include_directories(RecommendationCore PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
+target_link_libraries(RecommendationCore PUBLIC
         nlohmann_json::nlohmann_json
         CURL::libcurl
         SQLite::SQLite3
         Threads::Threads
 )
+
+add_executable(RecommendationAlgorithm main.cpp)
+target_link_libraries(RecommendationAlgorithm PRIVATE RecommendationCore)
+
+add_executable(RecommendationServer server.cpp)
+target_link_libraries(RecommendationServer PRIVATE RecommendationCore httplib::httplib)
