@@ -6,7 +6,8 @@
 std::vector<RecommendedAnime> RecommendationEngine::recommend(
     const std::vector<ListEntry>& watchedList,
     const SimilarityMatrix& matrix,
-    int topN) const {
+    int topN,
+    const std::function<bool(int)>& isAllowed) const {
 
     const int minSupport = 2;
 
@@ -43,6 +44,9 @@ std::vector<RecommendedAnime> RecommendationEngine::recommend(
                 continue;
             }
             if (similarity <= 0.0) {
+                continue;
+            }
+            if (isAllowed && !isAllowed(candidateId)) {
                 continue;
             }
 

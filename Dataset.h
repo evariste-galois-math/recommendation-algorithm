@@ -10,16 +10,21 @@ struct DatasetRating {
 };
 
 struct AnimeInfo {
-    int malId;
+    int malId = 0;
     std::string title;
+    std::string imageUrl;
+    std::string type;
+    int year = 0;
+    double score = 0.0;
+    std::vector<std::string> genres;
 };
 
 class Dataset {
 public:
     static std::unordered_map<int, AnimeInfo> loadAnimeInfo(const std::string& filePath);
-    static std::vector<DatasetRating> remapToMalIds(const std::vector<DatasetRating>& ratings, const std::unordered_map<int, AnimeInfo>& info);
+    static std::vector<DatasetRating> remapToMalIds(const std::vector<DatasetRating>& ratings,
+                                                    const std::unordered_map<int, AnimeInfo>& info);
     static std::vector<DatasetRating> loadFromCsv(const std::string& filePath);
-    static std::vector<DatasetRating> filterSparse(const std::vector<DatasetRating>& rating, int minCount = 100);
+    static std::vector<DatasetRating> filterSparse(const std::vector<DatasetRating>& ratings, int minCount = 100);
     static std::vector<DatasetRating> sampleUsers(const std::vector<DatasetRating>& ratings, int keepEvery);
 };
-
