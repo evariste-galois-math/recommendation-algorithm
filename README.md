@@ -1,5 +1,9 @@
 # Anime Recommender
 
+**Live demo:** https://recommendation-algorithm.danny-rios363.workers.dev
+
+The backend runs on Render's free tier, so the first load after a quiet period can take up to a minute while it wakes up.
+
 Type in a MyAnimeList username and get a ranked list of anime you haven't watched yet, based on what you actually rated instead of a generic top-rated list.
 
 I built this to learn how recommendation systems really work, so the whole engine is written from scratch in C++ with no ML libraries.
@@ -9,7 +13,7 @@ I built this to learn how recommendation systems really work, so the whole engin
 1. I took a public dataset of about 148 million MAL ratings, sampled every 4th user, and dropped anime with fewer than 100 ratings. That left 27,350,813 ratings across 8,887 anime.
 2. For every anime, I computed how similar it is to every other anime based on who rated them, and saved the 50 closest matches in SQLite. This runs once, offline.
 3. When someone enters a username, the server pulls their rated list from the MAL API, looks up the neighbors of everything they've watched, and scores the anime they haven't seen.
-4. A React frontend shows the results.
+4. A React frontend, hosted on Cloudflare, shows the results.
 
 ## The algorithm
 
