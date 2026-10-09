@@ -11,7 +11,7 @@
 #include "RecommendationEngine.h"
 
 int main() {
-    // true  = full pipeline (about 25 minutes), rewrites similarity.db
+    // true  = full pipeline (about 20 minutes), rewrites similarity.db
     // false = load similarity.db and go straight to recommendations
     const bool rebuildDb = false;
 
@@ -51,6 +51,7 @@ int main() {
         builder.build(filtered);
         filtered.clear();
         filtered.shrink_to_fit();
+        std::cout << "Build complete." << std::endl;
 
         auto start = std::chrono::steady_clock::now();
         builder.precomputeAll();
